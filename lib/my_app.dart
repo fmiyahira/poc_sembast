@@ -14,9 +14,8 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late Database db;
-  late StoreRef<int, Map<String, Object?>> store;
-  late StreamSubscription<List<RecordSnapshot<int, Map<String, Object?>>>>?
-      subscription;
+  late StoreRef store;
+  late StreamSubscription? subscription;
   List<TodoItem> listTodoItem = <TodoItem>[];
 
   @override
@@ -53,7 +52,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   void watchTodoItens() {
-    QueryRef<int, Map<String, Object?>> query = store.query();
+    QueryRef query = store.query();
 
     subscription = query.onSnapshots(db).listen((snapshots) {
       listTodoItem.clear();
