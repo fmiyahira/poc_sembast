@@ -13,10 +13,6 @@ Future<Database> openDatabase() async {
   return await dbFactory.openDatabase(dbPath);
 }
 
-Future<void> appStart() async {
-  runApp(const MyApp());
-}
-
 void main() {
-  appStart();
+  runApp(const MyApp());
 }

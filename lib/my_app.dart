@@ -14,6 +14,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late Database db;
+  late StoreRef<int, Map<String, Object?>> store;
   late StreamSubscription<List<RecordSnapshot<int, Map<String, Object?>>>>?
       subscription;
   List<TodoItem> listTodoItem = <TodoItem>[];
@@ -36,34 +37,32 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> initialize() async {
     db = await openDatabase();
-    getTodoItens();
+    store = intMapStoreFactory.store('todos');
+
+    watchTodoItens();
   }
 
   Future<void> addTodoItem() async {
-    var store = intMapStoreFactory.store('todos');
-
     await store.add(db, {
       'title': 'Task ${DateTime.now().microsecondsSinceEpoch}',
     });
   }
 
   Future<void> deleteTodoItem(int id) async {
-    var store = intMapStoreFactory.store('todos');
-
     await store.delete(db, finder: Finder(filter: Filter.byKey(id)));
   }
 
-  void getTodoItens() {
-    var store = intMapStoreFactory.store('todos');
+  void watchTodoItens() {
+    QueryRef<int, Map<String, Object?>> query = store.query();
 
-    var query = store.query();
     subscription = query.onSnapshots(db).listen((snapshots) {
       listTodoItem.clear();
       for (RecordSnapshot record in snapshots) {
         listTodoItem.add(
           TodoItem(
-              id: record.key as int,
-              title: (record.value as Map<String, dynamic>)['title']),
+            id: record.key as int,
+            title: (record.value as Map<String, dynamic>)['title'],
+          ),
         );
       }
 
